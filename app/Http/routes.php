@@ -16,8 +16,9 @@ Route::get('/', function () {
 });
 
 Route::resource('posts', 'PostsController', [
-'except' => ['create', 'edit']
+	'except' => ['create', 'edit']
 ]);
+
 /*
 |--------------------------------------------------------------------------
 | Application Routes

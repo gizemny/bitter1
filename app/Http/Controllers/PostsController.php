@@ -18,7 +18,6 @@ class PostsController extends Controller
         return \App\Post::all();
     }
 
-
     /**
      * Store a newly created resource in storage.
      *
@@ -28,6 +27,7 @@ class PostsController extends Controller
     public function store(Request $request)
     {
         $post = new \App\Post;
+        $post->user_id = $request->user_id;    
         $post->description = $request->description;
         $post->save();
         return $post;
@@ -54,6 +54,7 @@ class PostsController extends Controller
     public function update(Request $request, $id)
     {
         $post = \App\Post::find($id);
+        $post->user_id = $request->user_id;    
         $post->description = $request->description;
         $post->save();
         return $post;

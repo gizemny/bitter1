@@ -23,4 +23,16 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
+    /**
+     * Get the posts associated with user.
+     */    
+    public function posts () {
+        $this->hasMany('\App\Post');
+    } 
+    /**
+     * Get the posts user belongs to - has favorited.
+     */    
+    public function postUser () {
+        $this->belongsToMany('\App\Post');
+    }       
 }
