@@ -54,7 +54,6 @@ class PostsController extends Controller
     public function update(Request $request, $id)
     {
         $post = \App\Post::find($id);
-        $post->user_id = $request->user_id;    
         $post->description = $request->description;
         $post->save();
         return $post;

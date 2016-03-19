@@ -38,5 +38,9 @@ Route::group(['middleware' => ['web']], function () {
 Route::group(['middleware' => 'web'], function () {
     Route::auth();
 
+	Route::resource('posts', 'PostsController', [
+		'only' => ['store', 'update','destroy']
+	]);
+
     Route::get('/home', 'HomeController@index');
 });
