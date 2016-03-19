@@ -31,5 +31,12 @@ Route::resource('posts', 'PostsController', [
 */
 
 Route::group(['middleware' => ['web']], function () {
-    //
+    // this is where our app lives -kevin 
+    Route::get('/home', 'HomeController@index');
+});
+
+Route::group(['middleware' => 'web'], function () {
+    Route::auth();
+
+    Route::get('/home', 'HomeController@index');
 });
