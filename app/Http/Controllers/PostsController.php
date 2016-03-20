@@ -30,6 +30,7 @@ class PostsController extends Controller
         $post->user_id = \Auth::user()->id;    
         $post->description = $request->description;
         $post->save();
+        
         return $post;
     }
 
@@ -74,8 +75,12 @@ class PostsController extends Controller
     public function destroy($id)
     {
         $post = \App\Post::find($id);
-        $post->delete();
-
+        if ($post->user_id == \Auth::user()->id) {
+            $post->delete();
+        } else {
+            return response('Unathorized', 403);
+        }
+        
         return $post;
     }
 }
