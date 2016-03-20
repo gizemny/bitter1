@@ -27,12 +27,12 @@ class User extends Authenticatable
      * Get the posts associated with user.
      */    
     public function posts () {
-        $this->hasMany('\App\Post');
+        return $this->hasMany('\App\Post');
     } 
     /**
      * Get the posts user belongs to - has favorited.
      */    
     public function postUser () {
-        $this->belongsToMany('\App\Post');
+        return $this->belongsToMany('\App\Post')->withTimestamps();
     }       
 }

@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 
-class PostsController extends Controller
+class UsersController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,8 +15,7 @@ class PostsController extends Controller
      */
     public function index()
     {
-        return \App\Post::all();
-        // return \App\Post::with('postUser')->get();
+        return \App\User::all();
     }
 
     /**
@@ -27,12 +26,14 @@ class PostsController extends Controller
      */
     public function store(Request $request)
     {
-        $post = new \App\Post;
-        $post->user_id = \Auth::user()->id;    
-        $post->description = $request->description;
-        $post->save();
+        $user = new \App\User;
+        $user->user_id == \Auth::user()->id) {
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->password = $request->password;
+        $user->save();
         
-        return $post;
+        return $user;
     }
 
     /**
@@ -43,7 +44,11 @@ class PostsController extends Controller
      */
     public function show($id)
     {
-        return \App\Post::find($id);
+        // return \App\User::find($id);
+        return \App\User::with([
+            'postUser',
+            'posts'
+        ])->find($id);
     }
 
     /**
@@ -55,16 +60,17 @@ class PostsController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $post = \App\Post::find($id);
-        // $this->authorize('update', $post);
-        if ($post->user_id == \Auth::user()->id) {
-            $post->description = $request->description;
-            $post->save();
+        $user = \App\User::find($id);
+        if ($user->user_id == \Auth::user()->id) {
+            $user->name = $request->name;
+            $user->email = $request->email;
+            $user->password = $request->password;
+            $user->save();
         } else {
             return response('Unathorized', 403);
         }
 
-        return $post;
+        return $user;
     }
 
     /**
@@ -75,13 +81,13 @@ class PostsController extends Controller
      */
     public function destroy($id)
     {
-        $post = \App\Post::find($id);
-        if ($post->user_id == \Auth::user()->id) {
-            $post->delete();
+        $user = \App\User::find($id);
+        if ($user->user_id == \Auth::user()->id) {
+            $user->delete();
         } else {
             return response('Unathorized', 403);
         }
         
-        return $post;
+        return $user;
     }
 }

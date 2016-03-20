@@ -26,22 +26,23 @@ Route::get('/', function () {
 |
 */
 
-Route::group(['middleware' => ['web']], function () {
-    // this is where our app lives -kevin 
-    Route::get('/home', 'HomeController@index');
-
-    Route::resource('posts', 'PostsController', [
-    	'only' => ['index', 'show']
-    ]);
-
-});
-
 Route::group(['middleware' => 'web'], function () {
     Route::auth();
 
-	Route::resource('posts', 'PostsController', [
-		'only' => ['store', 'update', 'destroy']
-	]);
-
+    // this is where our app lives  
     Route::get('/home', 'HomeController@index');
+
+    Route::group(['prefix' => 'api'], function () {
+        Route::resource('posts', 'PostsController', [
+            'only' => ['index', 'show']
+        ]);
+
+        Route::group(['middleware' => 'auth'], function () {
+            Route::group(['prefix' => 'api'], function () {
+            	Route::resource('posts', 'PostsController', [
+            		'only' => ['store', 'update', 'destroy']
+        	    ]);
+            });
+        });
+    });
 });
