@@ -15,10 +15,6 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::resource('posts', 'PostsController', [
-	'except' => ['create', 'edit']
-]);
-
 /*
 |--------------------------------------------------------------------------
 | Application Routes
@@ -33,13 +29,18 @@ Route::resource('posts', 'PostsController', [
 Route::group(['middleware' => ['web']], function () {
     // this is where our app lives -kevin 
     Route::get('/home', 'HomeController@index');
+
+    Route::resource('posts', 'PostsController', [
+    	'only' => ['index', 'show']
+    ]);
+
 });
 
 Route::group(['middleware' => 'web'], function () {
     Route::auth();
 
 	Route::resource('posts', 'PostsController', [
-		'only' => ['store', 'update','destroy']
+		'only' => ['store', 'update', 'destroy']
 	]);
 
     Route::get('/home', 'HomeController@index');

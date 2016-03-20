@@ -54,8 +54,14 @@ class PostsController extends Controller
     public function update(Request $request, $id)
     {
         $post = \App\Post::find($id);
-        $post->description = $request->description;
-        $post->save();
+        // $this->authorize('update', $post);
+        if ($post->user_id == \Auth::user()->id) {
+            $post->description = $request->description;
+            $post->save();
+        } else {
+            return response('Unathorized', 403);
+        }
+
         return $post;
     }
 
