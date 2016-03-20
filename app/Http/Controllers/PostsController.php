@@ -15,8 +15,7 @@ class PostsController extends Controller
      */
     public function index()
     {
-        return \App\Post::all();
-        // return \App\Post::with('postUser')->get();
+        return \App\Post::with('user')->orderBy('id', 'desc')->get();
     }
 
     /**

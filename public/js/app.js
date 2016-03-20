@@ -1,6 +1,6 @@
 'use strict';
 
-$.ajax('/posts', {
+$.ajax('/api/posts', {
 	type: 'GET',
 	success: function(posts) {
 		var string = '';
@@ -8,7 +8,7 @@ $.ajax('/posts', {
 		_.each(posts, function(post){
 			console.log(post);
 			string += post.description; //concatenate the values
-			string += ' '; 
+			string += '<br>'; 
 		});
 
 		$('#content').html(string);
