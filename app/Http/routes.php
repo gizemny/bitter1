@@ -15,6 +15,10 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+if (env('APP_DEBUG')) {
+    // Route to view logs. Only for use in development
+    Route::get('logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
+}
 /*
 |--------------------------------------------------------------------------
 | Application Routes
@@ -37,12 +41,10 @@ Route::group(['middleware' => 'web'], function () {
             'only' => ['index', 'show']
         ]);
 
-        Route::group(['middleware' => 'auth'], function () {
-            Route::group(['prefix' => 'api'], function () {
-            	Route::resource('posts', 'PostsController', [
-            		'only' => ['store', 'update', 'destroy']
-        	    ]);
-            });
+        Route::group(['middleware' => 'auth'], function () {            
+        	Route::resource('posts', 'PostsController', [
+        		'only' => ['store', 'update', 'destroy']
+            ]);
         });
     });
 });
