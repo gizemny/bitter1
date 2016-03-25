@@ -1,10 +1,13 @@
 'use strict';
 
-$.ajaxSetup({
-    headers: {
-        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-    }
+$(document).on('ready', function() {
+	$.ajaxSetup({
+	    headers: {
+	        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+	    }
+	});
 });
+
 
 var PostModel = Backbone.Model.extend({
 	urlRoot: '/api/posts/',
@@ -59,6 +62,28 @@ var PostsListView = Backbone.View.extend({
 	}
 });
 
+var HomeView = Backbone.View.extend({
+	el: '<div class="container">\
+	      <div class="row">\
+	        <div class="three columns"></div>\
+	        <div class="six columns"></div>\
+	          <div class="row">\
+	            <div class="twelve columns"></div>\
+	          </div>\
+	          <div class="row">\
+	            <div class="twelve columns"></div>\
+	          </div>\
+	          <div class="three columns"></div>\
+	      </div>\
+	    </div>\
+	  ',
+	render: function(){
+		return this;
+	},
+});
+
+var homeView = new HomeView();
+
 // post collection has memorized the models
 var posts = new PostsCollection(); 
 
@@ -70,5 +95,6 @@ postsListView.render();
 
 $('#content').html(postsListView.el);
 console.log('view inserted!');
+
 
 

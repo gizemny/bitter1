@@ -6,11 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Bitter</title>
-
     <!-- Fonts -->
 
     <!-- Styles -->
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css">
 </head>
 <body>
     <div id="content"></div>
@@ -20,6 +19,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>    
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.3.2/backbone-min.js"></script>
     <script src="{{ asset('js/app.js') }}"></script>    
+
 <!--     <script type="text/javascript">
         $.ajaxSetup({
             headers: {
