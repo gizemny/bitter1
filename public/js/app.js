@@ -1,12 +1,12 @@
 'use strict';
 
-$(document).on('ready', function() {
+// $(document).on('ready', function() {
 	$.ajaxSetup({
 	    headers: {
 	        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
 	    }
 	});
-});
+// });
 
 
 var PostModel = Backbone.Model.extend({
@@ -36,17 +36,19 @@ var PostItemView = Backbone.View.extend({
 	}
 });
 
-//if its list view them it is a collection 
+
+
 var PostsListView = Backbone.View.extend({
 	el: '<ul></ul>',
 
-	template: undefined,
+	template: _.template('\
+		<% posts.each(function(post) { %>\
+			<li><a href="#"><%= posts.get("description") %></a></li>\
+		<% }) %>\
+	'),
 
 	initialize: function() {
-		this.listenTo(this.collection, 'all', function(event) {
-			console.log(event);
-		});
-		this.listenTo(this.collection, 'sync update', this.render);
+		this.listenTo(this.collection, 'update', this.render);
 	},
 
 	render: function() {
@@ -65,36 +67,54 @@ var PostsListView = Backbone.View.extend({
 var HomeView = Backbone.View.extend({
 	el: '<div class="container">\
 	      <div class="row">\
-	        <div class="three columns"></div>\
-	        <div class="six columns"></div>\
+	        <div class="three columns">three columns</div>\
+	        <div class="six columns">six columns</div>\
 	          <div class="row">\
 	            <div class="twelve columns"></div>\
 	          </div>\
 	          <div class="row">\
 	            <div class="twelve columns"></div>\
 	          </div>\
-	          <div class="three columns"></div>\
+	          <div class="three columns" id="all-posts"></div>\
 	      </div>\
 	    </div>\
 	  ',
-	render: function(){
+
+	initialize: function() {
+		this.listenTo(this.collection, 'all', function(event) {
+			console.log(event);
+		});
+		this.listenTo(this.collection, 'sync update', this.render);
+	},
+
+	render: function() {
+		var that = this;
+		var posts = new PostsCollection();
+		posts.fetch()
+		var postsListView = new PostsListView({ collection: posts});
+		postsListView.render();
+		this.$el.find('#all-posts').html(postsListView.el);
+
 		return this;
 	},
 });
 
+
+
 var homeView = new HomeView();
+$('#content').html(homeView.render().el);
 
 // post collection has memorized the models
-var posts = new PostsCollection(); 
+// var posts = new PostsCollection(); 
 
 // need success call back because asychronous
-posts.fetch();
+// posts.fetch();
 
-var postsListView = new PostsListView({ collection: posts });
-postsListView.render();
+// var postsListView = new PostsListView({ collection: posts });
+// postsListView.render();
 
-$('#content').html(postsListView.el);
-console.log('view inserted!');
+// $('#content').html(postsListView.el);
+// console.log('view inserted!');
 
 
 
