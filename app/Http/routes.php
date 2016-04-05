@@ -40,11 +40,16 @@ Route::group(['middleware' => 'web'], function () {
         Route::resource('posts', 'PostsController', [
             'only' => ['index', 'show']
         ]);
-
+        Route::resource('users', 'UsersController', [
+            'only' => ['index', 'show']
+        ]);
         Route::group(['middleware' => 'auth'], function () {            
         	Route::resource('posts', 'PostsController', [
         		'only' => ['store', 'update', 'destroy']
             ]);
+        Route::resource('users', 'UsersController', [
+            'only' => ['store', 'update', 'destroy']
+        ]);
         });
     });
 });

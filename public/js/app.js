@@ -1,13 +1,12 @@
 'use strict';
 
-// $(document).on('ready', function() {
+$(document).on('ready', function() {
 	$.ajaxSetup({
 	    headers: {
 	        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
 	    }
 	});
-// });
-
+});
 
 var PostModel = Backbone.Model.extend({
 	urlRoot: '/api/posts/',
@@ -19,31 +18,66 @@ var PostsCollection = Backbone.Collection.extend({
 	model: PostModel
 });
 
+var UserModel = Backbone.Model.extend({
+	urlRoot: '/api/users/',
+	idAttribute: 'id',
 
-//these are objects nested in {} so we use : and , 
-//because it is an Item View, this will have the post model associated with it 
-var PostItemView = Backbone.View.extend({
-	el: '<li></li>',
+	parse: function(response) {
+			if (response.posts) {
+				response.posts = new PostsCollection(response.posts);
+			}
+			return response;
+		}
+});
 
-	template: _.template('<h2><%= post.get("description") %></h2>'),
+var UsersCollection = Backbone.Collection.extend({
+	url: '/api/users/',
+	model: UserModel
+});
 
-	initiate: function() {
-		this.listenTo(this.model, 'sync', this.render);
+var UsersListView = Backbone.View.extend({
+	el: '<ul></ul>',
+
+	template: _.template('\
+		<% users.each(function(user) { %>\
+			<li><a data-id="<%= user.id %>" href="#"><%= user.get("name") %></a></li>\
+		<% }) %>\
+	'),
+
+	events: {
+		'click a': function(event) {
+			event.preventDefault();
+						var userId = $(event.target).data('id');
+						var user = new UserModel({id: userId});
+						user.fetch({
+							success: function() {
+								var postsListView = new PostsListView({ 
+									collection: user.get('posts')
+								});
+								$('#posts').html(postsListView.render().el);
+							}
+						});
+		}
+	},
+
+	initialize: function() {
+		this.listenTo(this.collection, 'update', this.render);
 	},
 
 	render: function() {
-		this.$el.html(this.template({ post: this.model })); 
+		this.$el.html(this.template({ users:this.collection }));
+		return this;
 	}
 });
-
-
 
 var PostsListView = Backbone.View.extend({
 	el: '<ul></ul>',
 
 	template: _.template('\
 		<% posts.each(function(post) { %>\
-			<li><a href="#"><%= posts.get("description") %></a></li>\
+			<li>\
+				<a href="#"><%= post.get("description") %></a>\
+			</li>\
 		<% }) %>\
 	'),
 
@@ -52,69 +86,61 @@ var PostsListView = Backbone.View.extend({
 	},
 
 	render: function() {
-		var that = this; 
-		//pass in the collection 
-		this.collection.each(function(postModel) {
-			// instantiate the itemView by looping through each and add pass in your model template
-			var postItemView = new PostItemView({ model: postModel });
-			postItemView.render();
-			// this is how you attach el of post item view into this el 
-			that.$el.append(postItemView.el);
-		}); 
+		this.$el.html(this.template({ posts:this.collection }));
+		return this;
 	}
 });
 
-var HomeView = Backbone.View.extend({
-	el: '<div class="container">\
-	      <div class="row">\
-	        <div class="three columns">three columns</div>\
-	        <div class="six columns">six columns</div>\
-	          <div class="row">\
-	            <div class="twelve columns"></div>\
-	          </div>\
-	          <div class="row">\
-	            <div class="twelve columns"></div>\
-	          </div>\
-	          <div class="three columns" id="all-posts"></div>\
-	      </div>\
-	    </div>\
-	  ',
 
-	initialize: function() {
-		this.listenTo(this.collection, 'all', function(event) {
-			console.log(event);
+var HomeView = Backbone.View.extend({
+	el:'\
+		<div class="container">\
+			<div class="row">\
+				<div class="three columns"></div>\
+				<div class="six columns">\
+					<div class="row">\
+						<div class="twelve columns" id="all-users"></div>\
+					</div>\
+					<div class="row">\
+						<div class="twelve columns"></div>\
+					</div>\
+				</div>\
+				<div class="three columns" id="posts"></div>\
+			</div>\
+		</div>\
+	',
+
+	insertUsers: function() {
+		var users = new UsersCollection();
+		users.fetch();
+		var usersListView = new UsersListView({
+			collection: users
 		});
-		this.listenTo(this.collection, 'sync update', this.render);
+		this.$el.find('#all-users').html(usersListView.render().el);
 	},
+
+	insertPosts: function() {
+		var posts = new PostsCollection();
+		posts.fetch();
+		var postsListView = new PostsListView({
+			collection: posts
+		});
+		this.$el.find('#posts').html(postsListView.render().el);
+	},
+
+
 
 	render: function() {
-		var that = this;
-		var posts = new PostsCollection();
-		posts.fetch()
-		var postsListView = new PostsListView({ collection: posts});
-		postsListView.render();
-		this.$el.find('#all-posts').html(postsListView.el);
+		this.insertUsers();
+		this.insertPosts();
 
 		return this;
-	},
+	}
+
 });
-
-
 
 var homeView = new HomeView();
 $('#content').html(homeView.render().el);
-
-// post collection has memorized the models
-// var posts = new PostsCollection(); 
-
-// need success call back because asychronous
-// posts.fetch();
-
-// var postsListView = new PostsListView({ collection: posts });
-// postsListView.render();
-
-// $('#content').html(postsListView.el);
-// console.log('view inserted!');
 
 
 
